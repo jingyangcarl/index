@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import * as THREE from "three";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader"
 import './App.css';
+import carl from './models/carl_.obj';
 
 class App extends Component {
   componentDidMount() {
@@ -26,13 +28,33 @@ class App extends Component {
     // Create renderer
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    document.getElementById("widget").appendChild(renderer.domElement);
+    // document.body.appendChild(renderer.domElement);
 
     // Create geometry
     var geometry = new THREE.BoxGeometry();
     var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     var cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
+
+    // load obj mesh
+    var loader = new OBJLoader();
+    loader.load(
+      // resource URL
+      carl,
+      // called when resource is loaded
+      function(object) {
+        scene.add(object);
+      },
+      // called when loading is in progresses
+      function(xhr) {
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      },
+      // called when loading has errors
+      function(error) {
+        console.log("ERROR");
+      }
+    );
 
     // Create animation
     var animate = function() {
@@ -50,6 +72,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <div id="widget"></div>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
