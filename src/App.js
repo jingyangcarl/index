@@ -44,49 +44,26 @@ class App extends Component {
     scene.add(cube);
 
     // mesh
-    var mtlLoader = new MTLLoader();
-    mtlLoader.load(carl_mtl, function(material) {
-      material.preload();
-      
-      var objLoader = new OBJLoader();
-      objLoader.setMaterials(material);
-      objLoader.load(
-        // resource URL
-        carl_obj, 
-        // called when resource is loaded
-        function(object) {
-          scene.add(object);
-        },
-        // called when loading is in progresses
-        function(xhr) {
-          console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-        },
-        // called when loading has errors
-        function(error) {
-          console.log("ERROR");
-        }
-      );
-    });
-
-
-    // var objLoader = new OBJLoader();
-    // objLoader.load(
-    //   // resource URL
-    //   carl_obj,
-    //   // called when resource is loaded
-    //   function(obj) {
-    //     // 
-    //     scene.add(obj);
-    //   },
-    //   // called when loading is in progresses
-    //   function(xhr) {
-    //     console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-    //   },
-    //   // called when loading has errors
-    //   function(error) {
-    //     console.log("ERROR");
-    //   }
-    // );
+    var objLoader = new OBJLoader();
+    objLoader.load(
+      // resource URL
+      carl_obj,
+      // called when resource is loaded
+      function(obj) {
+        console.log(obj);
+        obj.materialLibraries[0] = carl_mtl;
+        console.log(obj.materialLibraries[0]);
+        scene.add(obj);
+      },
+      // called when loading is in progresses
+      function(xhr) {
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      },
+      // called when loading has errors
+      function(error) {
+        console.log("ERROR");
+      }
+    );
 
     // Create animation
     var animate = function() {
