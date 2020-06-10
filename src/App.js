@@ -3,7 +3,10 @@ import logo from './logo.svg';
 import * as THREE from "three";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader"
 import './App.css';
-import carl from './models/carl_.obj';
+import carl_obj from './models/carl_.obj';
+import carl_mtl from './models/carl_.mtl';
+import carl_tex from './models/carl.jpg';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
 class App extends Component {
   componentDidMount() {
@@ -25,11 +28,14 @@ class App extends Component {
     // far: 1000
     camera.position.z = 5;
 
+    var ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
+    scene.add(ambientLight);
+
     // Create renderer
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("widget").appendChild(renderer.domElement);
-    // document.body.appendChild(renderer.domElement);
+
 
     // Create geometry
     var geometry = new THREE.BoxGeometry();
@@ -37,24 +43,50 @@ class App extends Component {
     var cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
-    // load obj mesh
-    var loader = new OBJLoader();
-    loader.load(
-      // resource URL
-      carl,
-      // called when resource is loaded
-      function(object) {
-        scene.add(object);
-      },
-      // called when loading is in progresses
-      function(xhr) {
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-      },
-      // called when loading has errors
-      function(error) {
-        console.log("ERROR");
-      }
-    );
+    // mesh
+    var mtlLoader = new MTLLoader();
+    mtlLoader.load(carl_mtl, function(material) {
+      material.preload();
+      
+      var objLoader = new OBJLoader();
+      objLoader.setMaterials(material);
+      objLoader.load(
+        // resource URL
+        carl_obj, 
+        // called when resource is loaded
+        function(object) {
+          scene.add(object);
+        },
+        // called when loading is in progresses
+        function(xhr) {
+          console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        },
+        // called when loading has errors
+        function(error) {
+          console.log("ERROR");
+        }
+      );
+    });
+
+
+    // var objLoader = new OBJLoader();
+    // objLoader.load(
+    //   // resource URL
+    //   carl_obj,
+    //   // called when resource is loaded
+    //   function(obj) {
+    //     // 
+    //     scene.add(obj);
+    //   },
+    //   // called when loading is in progresses
+    //   function(xhr) {
+    //     console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    //   },
+    //   // called when loading has errors
+    //   function(error) {
+    //     console.log("ERROR");
+    //   }
+    // );
 
     // Create animation
     var animate = function() {
