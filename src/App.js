@@ -3,8 +3,8 @@ import logo from './logo.svg';
 import * as THREE from "three";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader"
 import './App.css';
-import carl_obj from './models/carl_.obj';
-import carl_mtl from './models/carl_.mtl';
+import carl_obj from './models/carl.obj';
+import carl_mtl from './models/carl.mtl';
 import carl_tex from './models/carl.jpg';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 
