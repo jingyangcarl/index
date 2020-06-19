@@ -7,11 +7,11 @@ import './App.css';
 // https://threejs.org/examples/#webgl_loader_gltf
 // https://360toolkit.co/
 
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TextureLoader } from 'three';
 import carl from './models/carl.gltf'
-import skybox_map from './textures/equirectangular/lightstage.hdr'
+import skybox_map from './textures/equirectangular/usc_ict.png'
 
 class App extends Component {
   componentDidMount() {
@@ -54,14 +54,13 @@ class App extends Component {
     }
 
     // load skybox
-    new RGBELoader()
-      .setDataType(THREE.UnsignedByteType)
+    new TextureLoader()
       .load(
         skybox_map, 
         function(map){
           var envMap = pmremGenerator.fromEquirectangular(map).texture;
-          scene.background = envMap;
-          scene.environment = envMap;
+          scene.background = map;
+          scene.environment = map;
 
           map.dispose();
           pmremGenerator.dispose();
@@ -75,6 +74,7 @@ class App extends Component {
             carl, 
             function(gltf) {
               // called when resource is loaded
+
               scene.add(gltf.scene);
               render();
             }, 
