@@ -2,8 +2,15 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import * as THREE from "three";
 import './App.css';
+
+// reference: 
+// https://threejs.org/examples/#webgl_loader_gltf
+
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import carl from './models/carl.gltf'
+import skybox_map from './textures/equirectangular.hdr'
 
 class App extends Component {
   componentDidMount() {
@@ -29,43 +36,72 @@ class App extends Component {
     scene.add(ambientLight);
 
     // Create renderer
-    var renderer = new THREE.WebGLRenderer();
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.8;
     document.getElementById("widget").appendChild(renderer.domElement);
 
+    // Create pmrem
+    var pmremGenerator = new THREE.PMREMGenerator(renderer);
+    pmremGenerator.compileEquirectangularShader();
 
-    // Create geometry
-    // var geometry = new THREE.BoxGeometry();
-    // var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // var cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
-
-    // mesh
-    var loader = new GLTFLoader();
-    loader.load(carl, function(gltf) {
-      // called when resource is loaded
-      scene.add(gltf.scene);
-    }, function(xhr) {
-      // called when loading is in progresses
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-    }, function(error) {
-      // called when loading has errors
-      console.error(error);
-    })
-
-    // Create animation
-    var animate = function() {
-      requestAnimationFrame(animate);
-
-      // cube.rotation.x += 0.01;
-      // cube.rotation.y += 0.01;
-      // camera.rotation.x += 0.01;
-
-
+    // Create render
+    var render = function() {
       renderer.render(scene, camera);
-    };
+    }
 
-    animate();
+    // load skybox
+    new RGBELoader()
+      .setDataType(THREE.UnsignedByteType)
+      .load(
+        skybox_map, 
+        function(texture){
+          var envMap = pmremGenerator.fromCubemap(texture).texture;
+          scene.background = envMap;
+          scene.environment = envMap;
+
+          texture.dispose();
+          pmremGenerator.dispose();
+
+          // render envMap
+          render();
+
+          // loader mesh
+          var loader = new GLTFLoader();
+          loader.load(
+            carl, 
+            function(gltf) {
+              // called when resource is loaded
+              scene.add(gltf.scene);
+              render();
+            }, 
+            function(xhr) {
+              // called when loading is in progresses
+              console.log('mesh ' + (xhr.loaded / xhr.total * 100) + '% loaded');
+            }, 
+            function(error) {
+              // called when loading has errors
+              console.error(error);
+          })
+
+        }, 
+        function(xhr) {
+          // called when loading is in progresses
+          console.log('envMap ' + (xhr.loaded / xhr.total * 100) + '% loaded');
+        }, function(error) {
+          // called when loading has errors
+          console.error(error);
+        })
+
+    // Create controls
+    var controls = new OrbitControls(camera, renderer.domElement);
+    controls.addEventListener('change', render); //use if there is no animation loop
+    controls.minDistance = 2;
+    controls.maxDistance = 10;
+    controls.target.set(0, 0, 0);
+    controls.update();
   }
 
   render() {
