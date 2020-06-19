@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import * as THREE from "three";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader"
 import './App.css';
-import carl_obj from './models/carl.obj';
-import carl_mtl from './models/carl.mtl';
-import carl_tex from './models/carl.jpg';
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import carl from './models/carl.gltf'
 
 class App extends Component {
   componentDidMount() {
@@ -44,26 +41,12 @@ class App extends Component {
     scene.add(cube);
 
     // mesh
-    var objLoader = new OBJLoader();
-    objLoader.load(
-      // resource URL
-      carl_obj,
-      // called when resource is loaded
-      function(obj) {
-        console.log(obj);
-        obj.materialLibraries[0] = carl_mtl;
-        console.log(obj.materialLibraries[0]);
-        scene.add(obj);
-      },
-      // called when loading is in progresses
-      function(xhr) {
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-      },
-      // called when loading has errors
-      function(error) {
-        console.log("ERROR");
-      }
-    );
+    var loader = new GLTFLoader();
+    loader.load(carl, function(gltf) {
+      scene.add(gltf.scene);
+    }, undefined, function(error) {
+      console.error(error);
+    })
 
     // Create animation
     var animate = function() {
@@ -71,6 +54,7 @@ class App extends Component {
 
       cube.rotation.x += 0.01;
       cube.rotation.y += 0.01;
+
 
       renderer.render(scene, camera);
     };
