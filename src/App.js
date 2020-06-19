@@ -11,7 +11,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TextureLoader } from 'three';
 import carl from './models/carl.gltf'
-import skybox_map from './textures/equirectangular/usc_ict.png'
+import skybox_map from './textures/equirectangular/lightstage.png'
 
 class App extends Component {
   componentDidMount() {
@@ -40,13 +40,11 @@ class App extends Component {
     var renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.8;
     document.getElementById("widget").appendChild(renderer.domElement);
 
     // Create pmrem
     var pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileEquirectangularShader();
+    pmremGenerator.compileCubemapShader();
 
     // Create render
     var render = function() {
@@ -58,9 +56,10 @@ class App extends Component {
       .load(
         skybox_map, 
         function(map){
-          var envMap = pmremGenerator.fromEquirectangular(map).texture;
-          scene.background = map;
-          scene.environment = map;
+          var envMap = pmremGenerator.fromCubemap(map).texture;
+          envMap.anisotropy = renderer.getMaxAnisotropy();
+          scene.background = envMap;
+          scene.environment = envMap;
 
           map.dispose();
           pmremGenerator.dispose();
