@@ -11,7 +11,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TextureLoader } from 'three';
 import carl from './models/carl.gltf'
-import skybox_map from './textures/equirectangular/lightstage.png'
+import skybox_map from './textures/equirectangular/usc_court.png'
 
 class App extends Component {
   componentDidMount() {
@@ -102,6 +102,15 @@ class App extends Component {
     controls.maxDistance = 10;
     controls.target.set(0, 0, 0);
     controls.update();
+
+    window.addEventListener('resize', onWindowResize, false);
+
+    var onWindowResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      render();
+    }
   }
 
   render() {
