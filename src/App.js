@@ -5,12 +5,13 @@ import './App.css';
 
 // reference: 
 // https://threejs.org/examples/#webgl_loader_gltf
+// https://360toolkit.co/
 
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import carl from './models/carl.gltf'
-import skybox_map from './textures/equirectangular.hdr'
+import skybox_map from './textures/equirectangular/lightstage.hdr'
 
 class App extends Component {
   componentDidMount() {
@@ -57,12 +58,12 @@ class App extends Component {
       .setDataType(THREE.UnsignedByteType)
       .load(
         skybox_map, 
-        function(texture){
-          var envMap = pmremGenerator.fromCubemap(texture).texture;
+        function(map){
+          var envMap = pmremGenerator.fromEquirectangular(map).texture;
           scene.background = envMap;
           scene.environment = envMap;
 
-          texture.dispose();
+          map.dispose();
           pmremGenerator.dispose();
 
           // render envMap
