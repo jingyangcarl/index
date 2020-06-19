@@ -105,7 +105,8 @@ class App extends Component {
 
     window.addEventListener('resize', onWindowResize, false);
 
-    var onWindowResize = () => {
+    function onWindowResize() {
+      console.log("RESIZE");
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
