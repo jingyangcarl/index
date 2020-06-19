@@ -23,7 +23,7 @@ class App extends Component {
     // aspect ratio: window.innerWidth / window.innderHight
     // near: 0.1
     // far: 1000
-    camera.position.z = 5;
+    camera.position.z = 3;
 
     var ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
     scene.add(ambientLight);
@@ -35,16 +35,21 @@ class App extends Component {
 
 
     // Create geometry
-    var geometry = new THREE.BoxGeometry();
-    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    var cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    // var geometry = new THREE.BoxGeometry();
+    // var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    // var cube = new THREE.Mesh(geometry, material);
+    // scene.add(cube);
 
     // mesh
     var loader = new GLTFLoader();
     loader.load(carl, function(gltf) {
+      // called when resource is loaded
       scene.add(gltf.scene);
-    }, undefined, function(error) {
+    }, function(xhr) {
+      // called when loading is in progresses
+      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    }, function(error) {
+      // called when loading has errors
       console.error(error);
     })
 
@@ -52,8 +57,9 @@ class App extends Component {
     var animate = function() {
       requestAnimationFrame(animate);
 
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+      // cube.rotation.x += 0.01;
+      // cube.rotation.y += 0.01;
+      // camera.rotation.x += 0.01;
 
 
       renderer.render(scene, camera);
