@@ -130,8 +130,13 @@ class App extends Component {
       <div className="App">
         <div id="widget"></div>
         <Card id="info">
-          <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - equirectangular panorama demo.<br />
+          <Card.Body>
+            <Card.Title>Jing Yang</Card.Title>
+            <Card.Text>
+              <a href="https://threejs.org">three.js</a> - equirectangular panorama demo.<br />
 			    drag equirectangular texture into the page.
+            </Card.Text>
+          </Card.Body>
         </Card>
       </div>
     );
