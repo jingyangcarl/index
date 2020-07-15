@@ -127,20 +127,6 @@ class App extends Component {
           <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - equirectangular panorama demo.<br />
 			    drag equirectangular texture into the page.
         </div>
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
       </div>
     );
   }
