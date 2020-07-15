@@ -112,6 +112,12 @@ class App extends Component {
       render();
     }, false);
 
+    var animate = () => {
+      requestAnimationFrame(animate);
+      render();
+    };
+    animate();
+
   }
   render() {
     return (
