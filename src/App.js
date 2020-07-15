@@ -9,7 +9,6 @@ import './App.css';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { TextureLoader } from 'three';
 import carl from './models/carl.gltf'
 import skybox_map from './textures/equirectangular/usc_court.png'
 
@@ -37,7 +36,7 @@ class App extends Component {
     var geometry = new THREE.SphereBufferGeometry(500, 60, 40);
     geometry.scale(-1, 1, 1); // invert the geometry on the x-axis so that all fo the faces point inward
     var texture = new THREE.TextureLoader().load(skybox_map, (map) => {
-
+      // called when resource is loaded
     }, (xhr) => {
       // called when loading is in progresses
       console.log('envMap ' + (xhr.loaded / xhr.total * 100) + '% loaded');
@@ -54,14 +53,13 @@ class App extends Component {
     loader.load(carl, (gltf) => {
       // called when resource is loaded
       scene.add(gltf.scene);
+      render();
     }, (xhr) => {
       // called when loading is in progresses
       console.log('mesh ' + (xhr.loaded / xhr.total * 100) + '% loaded');
-
     }, (error) => {
       // called when loading has errors
       console.error(error);
-
     });
 
     // Create lighting
@@ -76,7 +74,6 @@ class App extends Component {
 
     // Create resizer
     var onWindowResize = function () {
-      console.log("RESIZE");
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -91,8 +88,31 @@ class App extends Component {
     controls.maxDistance = 10;
     controls.target.set(0, 0, 0);
     controls.update();
-  }
 
+    // Add Drag and Drop event listener for change the skybox
+    document.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+    }, false);
+    document.addEventListener('dragenter', () => {
+      document.body.style.opacity = 0.5;
+    }, false);
+    document.addEventListener('dragleave', () => {
+      document.body.style.opacity = 1.0;
+    }, false);
+    document.addEventListener('drop', (event) => {
+      event.preventDefault();
+      var reader = new FileReader();
+      reader.addEventListener('load', (event) => {
+        material.map.image.src = event.target.result;
+        material.map.needsUpdate = true;
+      }, false);
+      reader.readAsDataURL(event.dataTransfer.files[0]);
+      document.body.style.opacity = 1;
+      render();
+    }, false);
+
+  }
   render() {
     return (
       <div className="App">
