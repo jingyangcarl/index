@@ -123,6 +123,10 @@ class App extends Component {
     return (
       <div className="App">
         <div id="widget"></div>
+        <div id="info">
+          <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - equirectangular panorama demo.<br />
+			    drag equirectangular texture into the page.
+        </div>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
