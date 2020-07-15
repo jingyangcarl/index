@@ -30,10 +30,6 @@ class App extends Component {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById("widget").appendChild(renderer.domElement);
 
-    // Create pmrem
-    // var pmremGenerator = new THREE.PMREMGenerator(renderer);
-    // pmremGenerator.compileCubemapShader();
-
     // Create a skybox
     // since using pmremGenerator will have really bad resolution,
     // instead, using a sphere will generate better result.
