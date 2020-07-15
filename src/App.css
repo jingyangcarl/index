@@ -39,8 +39,11 @@
 
 #info {
 	position: absolute;
-	top: 0px;
-	width: 100%;
+  top: 0px;
+  left: 0px;
+  width: 30%;
+  background-color:white;
+  opacity: .4;
 	padding: 10px;
 	box-sizing: border-box;
 	text-align: center;

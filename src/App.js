@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import * as THREE from "three";
 import './App.css';
 
@@ -10,7 +9,8 @@ import './App.css';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import carl from './models/carl.gltf'
-import skybox_map from './textures/equirectangular/usc_court.png'
+import skybox_map from './textures/equirectangular/griffith.png'
+import { Card } from 'react-bootstrap';
 
 class App extends Component {
   componentDidMount() {
@@ -46,6 +46,8 @@ class App extends Component {
     });
     var material = new THREE.MeshBasicMaterial({ map: texture });
     var mesh = new THREE.Mesh(geometry, material);
+    // scene.background = texture;
+    // scene.environment = texture;
     scene.add(mesh);
 
     // load mesh
@@ -71,6 +73,10 @@ class App extends Component {
       renderer.render(scene, camera);
     }
     render();
+
+    // https://threejs.org/examples/webgl_materials_envmaps.html
+    scene.background = texture;
+    scene.environment = texture;
 
     // Create resizer
     var onWindowResize = function () {
@@ -123,10 +129,10 @@ class App extends Component {
     return (
       <div className="App">
         <div id="widget"></div>
-        <div id="info">
+        <Card id="info">
           <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - equirectangular panorama demo.<br />
 			    drag equirectangular texture into the page.
-        </div>
+        </Card>
       </div>
     );
   }
