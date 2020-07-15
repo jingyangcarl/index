@@ -21,20 +21,8 @@ class App extends Component {
   init() {
     // Create the scene
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    // field of view: 75
-    // aspect ratio: window.innerWidth / window.innderHight
-    // near: 0.1
-    // far: 1000
-    camera.position.z = 3;
-
-    var ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
-    scene.add(ambientLight);
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 2;
 
     // Create renderer
     var renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -43,75 +31,70 @@ class App extends Component {
     document.getElementById("widget").appendChild(renderer.domElement);
 
     // Create pmrem
-    var pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileCubemapShader();
+    // var pmremGenerator = new THREE.PMREMGenerator(renderer);
+    // pmremGenerator.compileCubemapShader();
+
+    // Create a skybox
+    // since using pmremGenerator will have really bad resolution,
+    // instead, using a sphere will generate better result.
+    // Reference: https://threejs.org/examples/webgl_panorama_equirectangular.html
+    var geometry = new THREE.SphereBufferGeometry(500, 60, 40);
+    geometry.scale(-1, 1, 1); // invert the geometry on the x-axis so that all fo the faces point inward
+    var texture = new THREE.TextureLoader().load(skybox_map, (map) => {
+
+    }, (xhr) => {
+      // called when loading is in progresses
+      console.log('envMap ' + (xhr.loaded / xhr.total * 100) + '% loaded');
+    }, (error) => {
+      // called when loading has errors
+      console.error(error);
+    });
+    var material = new THREE.MeshBasicMaterial({ map: texture });
+    var mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    // load mesh
+    var loader = new GLTFLoader();
+    loader.load(carl, (gltf) => {
+      // called when resource is loaded
+      scene.add(gltf.scene);
+    }, (xhr) => {
+      // called when loading is in progresses
+      console.log('mesh ' + (xhr.loaded / xhr.total * 100) + '% loaded');
+
+    }, (error) => {
+      // called when loading has errors
+      console.error(error);
+
+    });
+
+    // Create lighting
+    var ambientLight = new THREE.AmbientLight(0xcccccc, 3.0);
+    scene.add(ambientLight);
 
     // Create render
-    var render = function() {
+    var render = function () {
       renderer.render(scene, camera);
     }
+    render();
 
-    // load skybox
-    new TextureLoader()
-      .load(
-        skybox_map, 
-        function(map){
-          var envMap = pmremGenerator.fromCubemap(map).texture;
-          envMap.anisotropy = renderer.getMaxAnisotropy();
-          scene.background = envMap;
-          scene.environment = envMap;
-
-          map.dispose();
-          pmremGenerator.dispose();
-
-          // render envMap
-          render();
-
-          // loader mesh
-          var loader = new GLTFLoader();
-          loader.load(
-            carl, 
-            function(gltf) {
-              // called when resource is loaded
-
-              scene.add(gltf.scene);
-              render();
-            }, 
-            function(xhr) {
-              // called when loading is in progresses
-              console.log('mesh ' + (xhr.loaded / xhr.total * 100) + '% loaded');
-            }, 
-            function(error) {
-              // called when loading has errors
-              console.error(error);
-          })
-
-        }, 
-        function(xhr) {
-          // called when loading is in progresses
-          console.log('envMap ' + (xhr.loaded / xhr.total * 100) + '% loaded');
-        }, function(error) {
-          // called when loading has errors
-          console.error(error);
-        })
-
-    // Create controls
-    var controls = new OrbitControls(camera, renderer.domElement);
-    controls.addEventListener('change', render); //use if there is no animation loop
-    controls.minDistance = 2;
-    controls.maxDistance = 10;
-    controls.target.set(0, 0, 0);
-    controls.update();
-
-    window.addEventListener('resize', onWindowResize, false);
-
-    function onWindowResize() {
+    // Create resizer
+    var onWindowResize = function () {
       console.log("RESIZE");
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
       render();
     }
+    window.addEventListener('resize', onWindowResize, false);
+
+    // Create OrbitControls
+    var controls = new OrbitControls(camera, renderer.domElement);
+    controls.addEventListener('change', render); //use if there is no animation loop
+    controls.minDistance = 2;
+    controls.maxDistance = 10;
+    controls.target.set(0, 0, 0);
+    controls.update();
   }
 
   render() {
