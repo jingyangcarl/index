@@ -10,9 +10,16 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import carl from './models/carl.gltf'
 import skybox_map from './textures/equirectangular/griffith.png'
-import { Card } from 'react-bootstrap';
+import { Card, Button, Collapse } from 'react-bootstrap';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+    };
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -21,6 +28,7 @@ class App extends Component {
     // Create the scene
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.y = 1;
     camera.position.z = 2;
 
     // Create renderer
@@ -46,8 +54,6 @@ class App extends Component {
     });
     var material = new THREE.MeshBasicMaterial({ map: texture });
     var mesh = new THREE.Mesh(geometry, material);
-    // scene.background = texture;
-    // scene.environment = texture;
     scene.add(mesh);
 
     // load mesh
@@ -67,12 +73,6 @@ class App extends Component {
     // Create lighting
     var ambientLight = new THREE.AmbientLight(0xcccccc, 3.0);
     scene.add(ambientLight);
-
-    // Create render
-    var render = function () {
-      renderer.render(scene, camera);
-    }
-    render();
 
     // https://threejs.org/examples/webgl_materials_envmaps.html
     scene.background = texture;
@@ -118,13 +118,19 @@ class App extends Component {
       render();
     }, false);
 
+    // Create render
+    var render = function () {
+      renderer.render(scene, camera);
+    }
+    render();
+
     var animate = () => {
       requestAnimationFrame(animate);
       render();
     };
     animate();
-
   }
+
   render() {
     return (
       <div className="App">
@@ -136,6 +142,8 @@ class App extends Component {
               <a href="https://threejs.org">three.js</a> - equirectangular panorama demo.<br />
 			    drag equirectangular texture into the page.
             </Card.Text>
+            <Button
+              aria-controls="example-collapse-text">Education</Button>
           </Card.Body>
         </Card>
       </div>
